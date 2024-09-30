@@ -74,5 +74,11 @@ export default APP_CONFIG;
 - The JokeAPI provides an id. If the language is changed once a joke is loaded, the joke should be fetched again using the id with the updated language.
 - Move GCP_API_KEY to a `.env` file for additional security. Ideally, the API key will be held on the server and requests to the Google Translate API will be proxied through the server.
 - Improve UX for loading languages. The language selector should not be accessible when loading languages.
-- Move joke loading to a `useJoke` hook to encapsulate joke loading and translation logic.
+- Implement `zod` for API transforms.
 - Add unit tests for LanguageSwitcher, API transforms, ...
+
+## Joke API
+
+[JokeAPI](https://sv443.net/jokeapi/v2/)
+
+**Limitations**: The Joke API doesn't have translations for every joke, and trying to fetch a translation for a given joke id could result in an error. It is safer when falling back to the Joke API for translations to fetch a new joke with the updated language.

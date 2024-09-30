@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react"
-import { loadJoke } from "@/app/api/joke";
-import { JokeData, JokeSingle, JokeTwoPart } from "@/app/types/joke";
+import { useState } from "react"
+import { JokeSingle, JokeTwoPart } from "@/app/types/joke";
 import { useLanguageContext } from "@/app/context/language-context";
-import { loadTranslations } from "@/app/api/translation";
-import { Language } from "@/app/types/languages";
+import useJoke from "@/app/hooks/use-joke";
 
 const SingleJoke = ({ joke }: { joke: JokeSingle }) => {
-  return <p>{joke.joke}</p>
+  return <p>{joke.joke}</p>;
 };
 
 const TwoPartJoke = ({ joke }: { joke: JokeTwoPart }) => {
@@ -27,7 +25,7 @@ const TwoPartJoke = ({ joke }: { joke: JokeTwoPart }) => {
         <p className="mt-8">{joke.delivery} 🤣</p>
       )}
     </div>
-  )
+  );
 };
 
 const LoadingMessage = ({ text }: { text: string }) => {
@@ -46,68 +44,24 @@ const ErrorMessage = ({ text }: { text: string }) => {
       <p className="mt-4 text-2xl">{text}</p>
     </div>
   );
-}
+};
 
 export default function Joke() {
-  const { language, translations } = useLanguageContext();
-  const [joke, setJoke] = useState<JokeData>();
-  const [localizedJoke, setLocalizedJoke] = useState<JokeData>();
-  const [loading, setLoading] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
-
-  const initiateJokeLoading = () => {
-    if (loading !== 'idle' || 'pending') {
-      setLoading('idle');
-    }
-  }
-
-  const fetchJoke = async () => {
-    const newJoke = await loadJoke(language);
-    if (typeof newJoke === 'object') {
-      setJoke(newJoke as JokeData);
-    } else {
-      setLoading('error');
-    }
-  };
-
-  const localizeJoke = async (originalJoke: JokeData | undefined, language: Language) => {
-    if (!language.language || !originalJoke) {
-      return;
-    }
-    const { type, ...strings } = originalJoke;
-    const translatedJoke = await loadTranslations<Pick<JokeSingle, 'joke'> | Pick<JokeTwoPart, 'setup' | 'delivery'>>({originalText: strings, language});
-    if (typeof translatedJoke === 'object') {
-      const pendingJoke = { ...originalJoke, ...translatedJoke };
-      setLocalizedJoke(pendingJoke);
-      setLoading('success');
-    } else {
-      setLoading('error');
-    }
-  };
-
-  useEffect(() => {
-    if (loading === 'idle') {
-      setLoading('pending');
-      fetchJoke();
-    }  
-  }, [loading]);
-
-  useEffect(() => {
-    localizeJoke(joke, language);
-  }, [language, joke]);
-
+  const { translations } = useLanguageContext();
+  const { status, joke, loadJoke } = useJoke();
 
   return (
     <div className="m-auto max-w-screen-sm ">
       <div className="mb-8 p-8 rounded-md bg-gray-800 border-purple-900 border-2">
-        {loading === 'success' && localizedJoke?.type === 'single' && <SingleJoke joke={localizedJoke} />}
-        {loading === 'success' && localizedJoke?.type === 'twopart' && <TwoPartJoke joke={localizedJoke} />}
-        {(loading === 'idle' || loading === 'pending') && <LoadingMessage text={translations.JOKE_LOADING} />}
-        {loading === 'error' && <ErrorMessage text={translations.JOKE_LOADING_ERROR} />}
+        {status === 'success' && joke?.type === 'single' && <SingleJoke joke={joke} />}
+        {status === 'success' && joke?.type === 'twopart' && <TwoPartJoke joke={joke} />}
+        {(status === 'idle' || status === 'pending') && <LoadingMessage text={translations.JOKE_LOADING} />}
+        {status === 'error' && <ErrorMessage text={translations.JOKE_LOADING_ERROR} />}
       </div>
       <div className="flex flex-col items-center">
         <button
-          className={`rounded text-gray-100 inline-block px-6 py-2 ${loading == 'pending' ? 'bg-gray-500' : 'bg-purple-900'}`}
-          onClick={initiateJokeLoading}
+          className={`rounded text-gray-100 inline-block px-6 py-2 ${status == 'pending' ? 'bg-gray-500' : 'bg-purple-900'}`}
+          onClick={loadJoke}
         >
           {translations.JOKE_LOAD_NEW_JOKE}
         </button>

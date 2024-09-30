@@ -22,30 +22,40 @@ interface JokeResponse {
   lang: string;
 }
 
-const mapJoke = (jokeResponse: JokeResponse): JokeData | null => {
-  if (jokeResponse.type === 'single') {
+type LoadJoke = {
+  language?: Language;
+  id?: number;
+}
+
+const mapJoke = (res: JokeResponse): JokeData | null => {
+  if (res.type === 'single') {
     return {
       type: 'single',
-      joke: jokeResponse.joke!
+      id: res.id,
+      language: res.lang,
+      joke: res.joke!
     };
   }
-  if (jokeResponse.type === 'twopart') {
+  if (res.type === 'twopart') {
     return {
       type: 'twopart',
-      delivery: jokeResponse.delivery!,
-      setup: jokeResponse.setup!,
+      id: res.id,
+      language: res.lang,
+      delivery: res.delivery!,
+      setup: res.setup!,
     };
   }
   return null;
 };
 
-const loadJoke = async (language?: Language): Promise<JokeData | null> => {
-  let query = '';
+const loadJoke = async ({ language, id }: LoadJoke ): Promise<JokeData | null> => {
+  const path = 'Any';
+  let query = id ? `idRange=${id}&` : '';
   if ((!APP_CONFIG.GCP_API_KEY || APP_CONFIG.USE_SUPPORTED_LANGUAGES) && language?.language) {
-    query += `?lang=${language.language}`;
+    query += `lang=${language.language}`;
   }
   try {
-    const result = await fetch(`https://v2.jokeapi.dev/joke/Any${query}`);
+    const result = await fetch(`https://v2.jokeapi.dev/joke/${path}${query && '?' + query}`);
     const json = await result.json();
     return mapJoke(json);
   } catch(err) {

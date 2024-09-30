@@ -1,6 +1,6 @@
 const APP_CONFIG = {
   GCP_API_KEY: '',
-  USE_SUPPORTED_LANGUAGES: true,
+  USE_SUPPORTED_LANGUAGES: false,
   SUPPORTED_LANGUAGES: [
     { language: 'cs', name: 'Czech' },
     { language: 'de', name: 'German' },
