@@ -43,10 +43,11 @@ const loadLanguages = async (): Promise<Language[] | string> => {
   }
 };
 
-type LoadTranslations = {
-  originalText: {
-    [key: string]: string;
-  },
+type KeyMap = { [key: string]: string };
+type ObjectMap<T> = { [Property in keyof T]: string }
+
+type LoadTranslations<T extends KeyMap> = {
+  originalText: ObjectMap<T>,
   language: Language
 };
 
@@ -64,12 +65,12 @@ interface TranslateTextResponse {
   data: TranslateTextReponseList;
 }
 
-interface MapResponseToKeysRet {
-  [key: string]: string;
+type MapResponseToKeysRet<T extends KeyMap> = {
+  [Property in keyof T]: string;
 }
 
-const mapResponseToKeys = (map: [string, string][], translations: TranslateTextResponseTranslation[]): MapResponseToKeysRet => {
-  const remapped = {} as MapResponseToKeysRet;
+const mapResponseToKeys = <T extends KeyMap>(map: [keyof T, string][], translations: TranslateTextResponseTranslation[]): MapResponseToKeysRet<T> => {
+  const remapped = {} as ObjectMap<T>;
   for (let i = 0; i < map.length; i++) {
     const key = map[i][0];
     const val = translations[i].translatedText || map[i][1];
@@ -79,7 +80,7 @@ const mapResponseToKeys = (map: [string, string][], translations: TranslateTextR
 };
 
 
-const loadTranslations = async ({ originalText, language }: LoadTranslations): Promise<{ [key: string]: string } | string> => {
+const loadTranslations = async <T extends KeyMap>({ originalText, language }: LoadTranslations<T>): Promise<{ [Property in keyof T]: string } | string> => {
   if (!APP_CONFIG.GCP_API_KEY || APP_CONFIG.USE_SUPPORTED_LANGUAGES) {
     return originalText;
   }
@@ -117,12 +118,7 @@ const loadTranslations = async ({ originalText, language }: LoadTranslations): P
   }
 }
 
-const loadAppTranslations = async ({ originalText, language }: LoadTranslations): Promise<Translations> => {
-  return await loadTranslations({ originalText, language }) as Translations;
-} 
-
 export {
   loadLanguages,
-  loadTranslations,
-  loadAppTranslations
+  loadTranslations
 };

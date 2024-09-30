@@ -42,9 +42,6 @@ const mapJoke = (jokeResponse: JokeResponse): JokeData | null => {
 const loadJoke = async (language?: Language): Promise<JokeData | null> => {
   let query = '';
   if ((!APP_CONFIG.GCP_API_KEY || APP_CONFIG.USE_SUPPORTED_LANGUAGES) && language?.language) {
-    console.log('GCP_API_KEY', APP_CONFIG.GCP_API_KEY);
-    console.log('USE_SUPPORTED_LANGUAGES', APP_CONFIG.USE_SUPPORTED_LANGUAGES);
-    console.log('language', language);
     query += `?lang=${language.language}`;
   }
   try {

@@ -50,7 +50,7 @@ Fonts are loaded using NextJs fonts, so no external font files are required.
 
 ## App Config
 
-The project has minimal configuration. For simplicity and testing purposes, the Google Translate API key can be used form the config file. If this is not supplied, then fallback languages supported by the JokeAPI are included here.
+The project has minimal configuration. For simplicity and testing purposes, the Google Translate API key `GCP_API_KEY` can be used from the config file. If this is not supplied, or `USE_SUPPORTED_LANGUAGES == true`, then `SUPPORTED_LANGUAGES` are used which are the languages supported by the JokeAPI.
 
 ```app.config.js
 const APP_CONFIG = {

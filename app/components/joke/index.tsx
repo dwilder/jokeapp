@@ -74,9 +74,9 @@ export default function Joke() {
       return;
     }
     const { type, ...strings } = originalJoke;
-    const translatedJoke = await loadTranslations({originalText: strings, language});
+    const translatedJoke = await loadTranslations<Pick<JokeSingle, 'joke'> | Pick<JokeTwoPart, 'setup' | 'delivery'>>({originalText: strings, language});
     if (typeof translatedJoke === 'object') {
-      const pendingJoke = { ...translatedJoke, type } as JokeData;
+      const pendingJoke = { ...originalJoke, ...translatedJoke };
       setLocalizedJoke(pendingJoke);
       setLoading('success');
     } else {

@@ -28,9 +28,9 @@ export const LanguageProvider = ({ children }: { children: React.JSX.Element }):
 
   useEffect(() => {
     (async () => {
-      const translated = await loadTranslations({originalText: text, language});
+      const translated = await loadTranslations<Translations>({originalText: text, language});
       if (typeof translated !== 'string') {
-        setTranslations(translated as Translations);
+        setTranslations(translated);
       } else {
         // handle error
       }
