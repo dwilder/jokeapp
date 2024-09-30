@@ -1,10 +1,8 @@
 import { useLanguageContext } from "@/app/context/language-context"
 import { ChangeEvent, useEffect, useState } from "react";
 import { Language } from "@/app/types/languages";
-import { loadLanguages } from "@/app/api/translation";
 import debounce from "debounce";
 import Container from "@/app/components/container";
-import APP_CONFIG from "@/app.config";
 
 const LanguageOption = ({ language }: { language: Language }) => {
   return (
@@ -18,21 +16,6 @@ export default function LanguageSwitcher(): React.JSX.Element {
   const [localLang, setLocalLang] = useState<string>(language.language);
 
   const debounceSetLanguage = debounce(setLanguage, 400);
-
-  const _loadLanguages = async () => {
-    const languages = await loadLanguages();
-    if (typeof languages !== 'string') {
-      setLanguages(languages);
-    } else {
-      // fallback to JokeAPI supported languages
-      setLanguages(APP_CONFIG.SUPPORTED_LANGUAGES);
-    }
-    setLanguage({ language: 'en', name: 'English' })
-  };
-
-  useEffect(() => {
-    _loadLanguages();
-  }, []);
 
   useEffect(() => {
     setLocalLang(language.language);

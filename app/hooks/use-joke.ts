@@ -4,17 +4,15 @@ import { useLanguageContext } from "../context/language-context";
 import { JokeData, JokeSingle, JokeTwoPart } from "../types/joke";
 import { loadTranslations } from "../api/translation";
 import { Language } from "../types/languages";
-import APP_CONFIG from "@/app.config";
-
-type Status = 'idle' | 'pending' | 'success' | 'error';
+import { Status } from "../types/status";
 
 interface UseJoke {
-  joke: JokeSingle | JokeTwoPart,
+  joke: JokeSingle | JokeTwoPart | null,
   loadJoke: () => void,
   status: Status
 }
 
-const useJoke = () => {
+const useJoke = (): UseJoke => {
 
   const { language } = useLanguageContext();
   const [joke, setJoke] = useState<JokeData | null>(null);
