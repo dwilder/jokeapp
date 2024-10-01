@@ -3,8 +3,18 @@ import { Language } from '@/app/types/languages';
 import { JokeData } from '@/app/types/joke';
 import { BlacklistFlags } from '../types/blacklist-flags';
 
+interface JokeError {
+  error: true;
+  internalError: boolean;
+  code: number;
+  message: string;
+  causedBy: string[];
+  additionalInfo: string;
+  timestamp: number;
+}
+
 interface JokeResponse {
-  error: boolean;
+  error: false;
   category: string;
   type: string;
   joke?: string;
@@ -50,26 +60,38 @@ const mapJoke = (res: JokeResponse): JokeData | null => {
   return null;
 };
 
+const buildParams = (params: { [key: string]: string }): string => {
+  let strings: string[] = [];
+  for (let key in params) {
+    if (params[key]) {
+      strings.push(`${key}=${params[key]}`);
+    }
+  }
+  return strings.join('&') || '';
+};
+
 const getBlacklistFlagQuery = (blacklistFlags?: BlacklistFlags): string => {
   if (!blacklistFlags) return '';
   let str = Object.entries(blacklistFlags)
     .filter((flag) => flag[1])
     .map((flag) => flag[0])
     .join(',');
-  return str.length > 0 ? `blacklistFlags=${str}` : '';
-}
+  return str;
+};
 
 const loadJoke = async ({ language, id, blacklistFlags }: LoadJoke ): Promise<JokeData | null> => {
   const path = 'Any';
-  let query = id ? `idRange=${id}&` : '';
-  const flagQuery = getBlacklistFlagQuery(blacklistFlags);
-  query += flagQuery ?? '';
-  if ((!APP_CONFIG.GCP_API_KEY || APP_CONFIG.USE_SUPPORTED_LANGUAGES) && language?.language) {
-    query += `lang=${language.language}`;
-  }
+  let query = buildParams({
+    idRange: id?.toString() ?? '',
+    blacklistFlags: getBlacklistFlagQuery(blacklistFlags),
+    lang: (!APP_CONFIG.GCP_API_KEY || APP_CONFIG.USE_SUPPORTED_LANGUAGES) && language?.language || ''
+  });
   try {
     const result = await fetch(`https://v2.jokeapi.dev/joke/${path}${query && '?' + query}`);
-    const json = await result.json();
+    const json = await result.json() as JokeResponse | JokeError;
+    if (json.error) {
+      throw new Error();
+    }
     return mapJoke(json);
   } catch(err) {
     // handle error

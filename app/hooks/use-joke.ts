@@ -29,7 +29,7 @@ const useJoke = (): UseJoke => {
 
   const fetchJoke = async () => {
     const newJoke = await loadJoke({ language, blacklistFlags });
-    if (typeof newJoke === 'object') {
+    if (typeof newJoke === 'object' && newJoke !== null) {
       setJoke(newJoke);
     } else {
       setStatus('error');
