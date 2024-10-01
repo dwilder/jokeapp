@@ -5,6 +5,7 @@ import { JokeData, JokeSingle, JokeTwoPart } from "../types/joke";
 import { loadTranslations } from "../api/translation";
 import { Language } from "../types/languages";
 import { Status } from "../types/status";
+import { useSettingsContext } from "../context/settings-context";
 
 interface UseJoke {
   joke: JokeSingle | JokeTwoPart | null,
@@ -15,6 +16,7 @@ interface UseJoke {
 const useJoke = (): UseJoke => {
 
   const { language } = useLanguageContext();
+  const { blacklistFlags } = useSettingsContext();
   const [joke, setJoke] = useState<JokeData | null>(null);
   const [localizedJoke, setLocalizedJoke] = useState<JokeData | null>(null);
   const [status, setStatus] = useState<Status>('idle');
@@ -26,7 +28,7 @@ const useJoke = (): UseJoke => {
   }
 
   const fetchJoke = async () => {
-    const newJoke = await loadJoke({ language });
+    const newJoke = await loadJoke({ language, blacklistFlags });
     if (typeof newJoke === 'object') {
       setJoke(newJoke);
     } else {

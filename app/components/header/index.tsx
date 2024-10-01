@@ -4,12 +4,20 @@ import { useLanguageContext } from '@/app/context/language-context';
 import styles from './styles.module.css';
 import LanguageSwitcher from '../language-switcher';
 import Container from '../container';
+import Settings from '../settings-button';
 
 export default function Header() {
   const { translations: { APP_TITLE } } = useLanguageContext();
   return (
     <header>
-      <LanguageSwitcher />
+      <div className="bg-gray-800">
+        <Container>
+          <div className="flex flex-row items-center justify-end">
+            <LanguageSwitcher />
+            <Settings />
+          </div>
+        </Container>
+      </div>
       <Container>
         <div className="flex flex-col items-center justify-center">
           <div className="text-8xl pb-4 pt-16 md:text-9xl">🤡</div>

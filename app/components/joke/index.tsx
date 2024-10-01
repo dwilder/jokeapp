@@ -51,7 +51,7 @@ export default function Joke() {
   const { status, joke, loadJoke } = useJoke();
 
   return (
-    <div className="m-auto max-w-screen-sm ">
+    <div className="mx-auto max-w-screen-sm">
       <div className="mb-8 p-8 rounded-md bg-gray-800 border-purple-900 border-2">
         {status === 'success' && joke?.type === 'single' && <SingleJoke joke={joke} />}
         {status === 'success' && joke?.type === 'twopart' && <TwoPartJoke joke={joke} />}

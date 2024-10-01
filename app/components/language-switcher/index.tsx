@@ -32,21 +32,17 @@ export default function LanguageSwitcher(): React.JSX.Element {
   }
 
   return (
-    <div className="bg-gray-800">
-      <Container>
-        <form className="py-4 flex flex-row items-center justify-center sm:justify-end">
-          <label htmlFor="languageSwitcher" className="pr-4 flex">{translations.LANGUAGE_SWITCHER_LABEL}</label>
-          <select
-            className="flex p-2 text-gray-800 rounded"
-            id="languageSwitcher"
-            name="languageSwitcher"
-            value={localLang}
-            onChange={updateLanguage}
-          >
-            {languages.map((language) => <LanguageOption language={language} key={language.language} />)}
-          </select>
-        </form>
-      </Container>
-    </div>
+    <form className="py-4 flex flex-row items-center justify-center sm:justify-end">
+      <label htmlFor="languageSwitcher" className="pr-4 flex">{translations.LANGUAGE_SWITCHER_LABEL}</label>
+      <select
+        className="flex p-2 text-gray-800 rounded"
+        id="languageSwitcher"
+        name="languageSwitcher"
+        value={localLang}
+        onChange={updateLanguage}
+      >
+        {languages.map((language) => <LanguageOption language={language} key={language.language} />)}
+      </select>
+    </form>
   );
 }
